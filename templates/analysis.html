@@ -1,0 +1,230 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - {{ filename }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.20.0/plotly.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid mt-3">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1>Analysis Results: {{ filename }}</h1>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">Upload New File</a>
+                </div>
+                <hr>
+            </div>
+        </div>
+        
+        <!-- Data Preview -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3>Data Preview</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {{ data_preview|safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Statistics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h3>Summary Statistics</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Basic Info</h4>
+                                <ul>
+                                    <li><strong>Rows:</strong> {{ analysis_results.row_count }}</li>
+                                    <li><strong>Columns:</strong> {{ analysis_results.column_count }}</li>
+                                </ul>
+                                
+                                <h4>Missing Values</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Column</th>
+                                            <th>Missing</th>
+                                            <th>% Missing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for col, missing in analysis_results.missing_values.items() %}
+                                        <tr>
+                                            <td>{{ col }}</td>
+                                            <td>{{ missing }}</td>
+                                            <td>{{ "%.2f"|format(analysis_results.missing_percentage[col]) }}%</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h4>Data Types</h4>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Column</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for col, dtype in analysis_results.data_types.items() %}
+                                        <tr>
+                                            <td>{{ col }}</td>
+                                            <td>{{ dtype }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Auto-generated Graphs -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3>Visualizations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for graph_id, graph_json in graphs.items() %}
+                            <div class="col-md-6 mb-4">
+                                <div class="graph-container" id="{{ graph_id }}"></div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Graph Generator -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h3>Custom Graph Generator</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="graph-type" class="form-label">Graph Type</label>
+                                    <select class="form-select" id="graph-type">
+                                        <option value="bar">Bar Chart</option>
+                                        <option value="line">Line Chart</option>
+                                        <option value="scatter">Scatter Plot</option>
+                                        <option value="box">Box Plot</option>
+                                        <option value="histogram">Histogram</option>
+                                        <option value="pie">Pie Chart</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="x-column" class="form-label">X-Axis</label>
+                                    <select class="form-select" id="x-column">
+                                        {% for col in columns %}
+                                        <option value="{{ col }}">{{ col }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="y-column" class="form-label">Y-Axis</label>
+                                    <select class="form-select" id="y-column">
+                                        {% for col in columns %}
+                                        <option value="{{ col }}">{{ col }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="generate-graph" class="btn btn-primary">Generate Graph</button>
+                        
+                        <div class="mt-4">
+                            <div id="custom-graph-container" style="height:400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Store filename for API calls
+        const filename = "{{ filename }}";
+        
+        // Render all pre-generated graphs
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for graph_id, graph_json in graphs.items() %}
+            Plotly.newPlot("{{ graph_id }}", JSON.parse('{{ graph_json|safe }}'));
+            {% endfor %}
+            
+            // Set up custom graph generator
+            document.getElementById('generate-graph').addEventListener('click', function() {
+                const graphType = document.getElementById('graph-type').value;
+                const xColumn = document.getElementById('x-column').value;
+                const yColumn = document.getElementById('y-column').value;
+                
+                // Show loading indicator
+                document.getElementById('custom-graph-container').innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                
+                // Make API request
+                fetch('/api/custom_graph', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        graph_type: graphType,
+                        x_column: xColumn,
+                        y_column: yColumn
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('custom-graph-container').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                        Plotly.newPlot('custom-graph-container', JSON.parse(data));
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('custom-graph-container').innerHTML = `<div class="alert alert-danger">Error generating graph: ${error}</div>`;
+                });
+            });
+        });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

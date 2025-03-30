@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <title>Business Assistant</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav-header">
+                <h1>Business Assistant</h1>
+            </div>
+            <p class="subtitle">Your AI guide to Business queries</p>
+        </header>
+
+        <!-- Chat Section -->
+        <div class="chat-container" id="chat-container">
+            <!-- Chat messages will appear here -->
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Ask about investments, budgeting, or financial concepts...">
+            <button id="send-button">Send</button>
+        </div>
+
+        <!-- File Upload Section -->
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

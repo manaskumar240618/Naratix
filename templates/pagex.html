@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css">
+    <!-- Corrected CSS Path -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylex.css') }}">
+    <style>
+        /* Main styles for CSV Analyzer */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            font-weight: 600;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .graph-container {
+            height: 400px;
+            width: 100%;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: white;
+        }
+
+        /* Table styling */
+        .table {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0,0,0,.05);
+        }
+
+        .table th, .table td {
+            padding: 0.5rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Form elements */
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Upload file control */
+        input[type="file"] {
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* Custom graph controls */
+        #custom-graph-container {
+            min-height: 400px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">CSV Data Analyzer</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        
+                        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Select CSV File</label>
+                                <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                                <div class="form-text">Upload a CSV file for analysis (max 16MB)</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload and Analyze</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Features</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Upload and analyze any CSV file</li>
+                            <li>View comprehensive data statistics</li>
+                            <li>Automatic graph generation based on data content</li>
+                            <li>Interactive visualizations</li>
+                            <li>Custom graph creation</li>
+                            <li>Data preview</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <!-- Corrected JS Path -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
